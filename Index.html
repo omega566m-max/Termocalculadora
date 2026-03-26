@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TermoCalc Pro v2.5</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="stylesheet" href="StyleSheet1.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo"><i class="fas fa-fire-alt"></i> TermoCalc</div>
+            <ul>
+                <li onclick="showSection('calculadora', this)" class="active"><i class="fas fa-calculator"></i> Calculadora</li>
+                <li onclick="showSection('conversor', this)"><i class="fas fa-exchange-alt"></i> Conversor</li>
+                <li onclick="showSection('grafica', this)"><i class="fas fa-chart-line"></i> Gráfica T-v</li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <section id="calculadora" class="tab-content active">
+                <header>
+                    <h2>Propiedades del Agua Saturada</h2>
+                    <p>Interpolación lineal y mezcla líquido-vapor.</p>
+                </header>
+
+                <div class="calc-grid">
+                    <div class="card input-card">
+                        <div class="tabs-input">
+                            <button id="btnA4" class="active" onclick="setMode('A4')">Tabla A-4 (T)</button>
+                            <button id="btnA5" onclick="setMode('A5')">Tabla A-5 (P)</button>
+                        </div>
+                        <div class="field">
+                            <label id="lblInput">Temperatura (°C)</label>
+                            <input type="number" id="inputVal" value="197">
+                        </div>
+                        <div class="field">
+                            <label>Calidad del vapor (x)</label>
+                            <input type="number" id="inputX" value="0.5" step="0.01" min="0" max="1">
+                        </div>
+                        <button class="btn-primary" onclick="calcularPropiedades()">Calcular y Graficar</button>
+                    </div>
+
+                    <div class="results-grid">
+                        <div class="res-card highlight">
+                            <span id="resSatLabel">P. Sat (kPa)</span>
+                            <strong id="resSat">-</strong>
+                        </div>
+                        <div class="res-card"><span>v Promedio (m³/kg)</span><strong id="resV">-</strong></div>
+                        <div class="res-card"><span>u Promedio (kJ/kg)</span><strong id="resU">-</strong></div>
+                        <div class="res-card"><span>h Promedio (kJ/kg)</span><strong id="resH">-</strong></div>
+                        <div class="res-card"><span>s Promedio (kJ/kg·K)</span><strong id="resS">-</strong></div>
+                    </div>
+
+                    <div class="card table-card full-width">
+                        <h3>Detalles de Saturación (f, g, fg)</h3>
+                        <table class="sat-table">
+                            <thead>
+                                <tr>
+                                    <th>Propiedad</th>
+                                    <th>Líquido (f)</th>
+                                    <th>Evap. (fg)</th>
+                                    <th>Vapor (g)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sat-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="conversor" class="tab-content">
+                <h2>Conversor Bidireccional</h2>
+                <div class="card conv-container">
+                    <div class="conv-row">
+                        <div class="field">
+                            <label>Desde</label>
+                            <input type="number" id="convFrom" placeholder="0.00" oninput="convertir()">
+                        </div>
+                        <div class="swap-btn" onclick="swapUnits()">
+                            <i class="fas fa-retweet"></i>
+                        </div>
+                        <div class="field">
+                            <label>Resultado</label>
+                            <input type="number" id="convTo" readonly>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Magnitud y Dirección</label>
+                        <select id="unitType" onchange="convertir()">
+                            <option value="kpa-pa">Presión: kPa ➔ Pa</option>
+                            <option value="pa-kpa">Presión: Pa ➔ kPa</option>
+                            <option value="bar-kpa">Presión: bar ➔ kPa</option>
+                            <option value="kpa-bar">Presión: kPa ➔ bar</option>
+                            <option value="psi-kpa">Presión: psi ➔ kPa</option>
+                            <option value="kpa-psi">Presión: kPa ➔ psi</option>
+                            <option value="c-f">Temp: °C ➔ °F</option>
+                            <option value="f-c">Temp: °F ➔ °C</option>
+                            <option value="c-k">Temp: °C ➔ K</option>
+                            <option value="k-c">Temp: K ➔ °C</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section id="grafica" class="tab-content">
+                <h2>Diagrama Temperatura - Volumen (T-v)</h2>
+                <div class="card chart-container">
+                    <canvas id="tvChart"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="JavaScript.js"></script>
+</body>
+</html>

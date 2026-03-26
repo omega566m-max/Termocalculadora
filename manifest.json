@@ -1,0 +1,15 @@
+{
+  "name": "TermoCalc Pro",
+  "short_name": "TermoCalc",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#6c5ce7",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3655/3655610.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

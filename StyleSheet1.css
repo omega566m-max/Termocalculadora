@@ -1,0 +1,268 @@
+﻿:root {
+    --primary: #6c5ce7;
+    --bg: #f8f9fa;
+    --sidebar-bg: #2d3436;
+    --text: #2d3436;
+    --card: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- ESTILOS DE LAPTOP (POR DEFECTO) --- */
+.sidebar {
+    width: 250px;
+    background: var(--sidebar-bg);
+    color: white;
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: var(--primary);
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 15px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+    margin-bottom: 5px;
+}
+
+    .sidebar li:hover, .sidebar li.active {
+        background: var(--primary);
+    }
+
+.content {
+    flex: 1;
+    padding: 40px;
+}
+
+.tab-content {
+    display: none;
+}
+
+    .tab-content.active {
+        display: block;
+    }
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+}
+
+.card {
+    background: var(--card);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.field {
+    margin-bottom: 20px;
+}
+
+    .field label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.res-card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border-bottom: 4px solid var(--primary);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+    .res-card span {
+        display: block;
+        font-size: 0.8rem;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .res-card strong {
+        font-size: 1.2rem;
+        color: var(--primary);
+    }
+
+    .res-card.highlight {
+        background: #f0edff;
+        border: 2px solid var(--primary);
+    }
+
+.sat-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .sat-table th {
+        background: #f4f4f4;
+        padding: 12px;
+        text-align: left;
+    }
+
+    .sat-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        font-family: monospace;
+    }
+
+.swap-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 10px auto;
+    transition: 0.3s;
+}
+
+    .swap-btn:hover {
+        transform: rotate(180deg);
+    }
+
+.conv-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.chart-container {
+    height: 500px;
+}
+
+.tabs-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+    .tabs-input button {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid var(--primary);
+        background: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .tabs-input button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+/* --- ADAPTACIÓN ESPECIAL PARA CELULAR (Pantallas menores a 768px) --- */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* La sidebar se va arriba */
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .logo {
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .sidebar ul {
+        display: flex; /* Menú horizontal en celular */
+        justify-content: space-around;
+        gap: 5px;
+    }
+
+    .sidebar li {
+        padding: 8px;
+        margin-bottom: 0;
+        font-size: 0.8rem;
+        text-align: center;
+        flex: 1;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .calc-grid {
+        grid-template-columns: 1fr; /* Una sola columna en el celular */
+    }
+
+    .results-grid {
+        grid-template-columns: 1fr 1fr; /* Resultados de dos en dos */
+    }
+
+    .conv-row {
+        flex-direction: column; /* Conversor vertical */
+    }
+
+    .table-card {
+        overflow-x: auto; /* Scroll lateral para la tabla de saturación */
+    }
+
+    .chart-container {
+        height: 300px; /* Gráfica un poco más pequeña */
+    }
+}
