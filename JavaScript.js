@@ -1,4 +1,4 @@
-﻿// --- DATOS DE TABLAS (Ampliados para mejor precisión) ---
+// --- DATOS DE TABLAS ---
 const dataA4 = [
     { T: 0.01, P: 0.6117, vf: 0.001000, vg: 206.00, uf: 0.00, ug: 2374.9, hf: 0.00, hg: 2500.9, sf: 0.0000, sg: 9.1556 },
     { T: 50, P: 12.352, vf: 0.001012, vg: 12.026, uf: 209.33, ug: 2442.7, hf: 209.34, hg: 2591.3, sf: 0.7038, sg: 8.0748 },
@@ -41,7 +41,6 @@ function calcularPropiedades() {
     const x = parseFloat(document.getElementById('inputX').value);
     const key = mode === 'A4' ? 'T' : 'P';
 
-    // Encontrar intervalo
     let idx = dataA4.findIndex((r, i) => r[key] <= val && (dataA4[i + 1]?.[key] > val || !dataA4[i + 1]));
 
     if (idx === -1) {
@@ -58,8 +57,11 @@ function calcularPropiedades() {
     });
 
     const vProm = p.vf + x * (p.vg - p.vf);
-    document.getElementById('resSat').innerText = (mode === 'A4' ? p.P : p.T).toFixed(2);
-    document.getElementById('resV').innerText = vProm.toFixed(6);
+    const pSatText = (mode === 'A4' ? p.P : p.T).toFixed(2);
+    const vText = vProm.toFixed(6);
+
+    document.getElementById('resSat').innerText = pSatText;
+    document.getElementById('resV').innerText = vText;
     document.getElementById('resU').innerText = (p.uf + x * (p.ug - p.uf)).toFixed(2);
     document.getElementById('resH').innerText = (p.hf + x * (p.hg - p.hf)).toFixed(2);
     document.getElementById('resS').innerText = (p.sf + x * (p.sg - p.sf)).toFixed(4);
@@ -72,16 +74,73 @@ function calcularPropiedades() {
     currentState.v = vProm;
     currentState.t = p.T;
 
-    alert("Cálculo finalizado. El punto ha sido actualizado.");
+    // GUARDAR EN HISTORIAL AUTOMÁTICAMENTE
+    guardarEnHistorial({
+        valor: val,
+        x: x,
+        modo: mode,
+        pSat: pSatText,
+        v: vText
+    });
 }
 
-// --- CONVERSOR ---
+// --- HISTORIAL ---
+function guardarEnHistorial(datos) {
+    let historial = JSON.parse(localStorage.getItem('termo_historial')) || [];
+    const nuevoRegistro = {
+        fecha: new Date().toLocaleTimeString(),
+        input: datos.valor,
+        x: datos.x,
+        unidad: datos.modo === 'A4' ? '°C' : 'kPa',
+        modo: datos.modo,
+        pSat: datos.pSat,
+        v: datos.v
+    };
+    historial.unshift(nuevoRegistro);
+    if (historial.length > 10) historial.pop();
+    localStorage.setItem('termo_historial', JSON.stringify(historial));
+    renderizarHistorial();
+}
+
+function renderizarHistorial() {
+    const contenedor = document.getElementById('historial-lista');
+    let historial = JSON.parse(localStorage.getItem('termo_historial')) || [];
+    if (historial.length === 0) {
+        contenedor.innerHTML = '<p style="color: #666; font-style: italic;">No hay cálculos guardados.</p>';
+        return;
+    }
+    contenedor.innerHTML = historial.map((reg, index) => `
+        <div class="res-card" style="text-align: left; margin-bottom: 5px; cursor: pointer; border-bottom: 2px solid var(--primary);" onclick="cargarCalculo(${index})">
+            <small>${reg.fecha}</small><br>
+            <strong>In: ${reg.input}${reg.unidad} (x=${reg.x})</strong><br>
+            <span style="font-size: 0.8rem; color: var(--primary);">Resultado: ${reg.pSat} | v: ${reg.v}</span>
+        </div>
+    `).join('');
+}
+
+function cargarCalculo(index) {
+    let historial = JSON.parse(localStorage.getItem('termo_historial')) || [];
+    const reg = historial[index];
+    setMode(reg.modo);
+    document.getElementById('inputVal').value = reg.input;
+    document.getElementById('inputX').value = reg.x;
+    calcularPropiedades();
+    alert("Cálculo recuperado del historial.");
+}
+
+function limpiarHistorial() {
+    if (confirm("¿Borrar todo el historial?")) {
+        localStorage.removeItem('termo_historial');
+        renderizarHistorial();
+    }
+}
+
+// --- CONVERSOR Y GRÁFICA (Igual que antes) ---
 function convertir() {
     const val = parseFloat(document.getElementById('convFrom').value);
     const type = document.getElementById('unitType').value;
     let res = 0;
     if (isNaN(val)) return;
-
     switch (type) {
         case 'kpa-pa': res = val * 1000; break;
         case 'pa-kpa': res = val / 1000; break;
@@ -99,14 +158,11 @@ function convertir() {
 
 function swapUnits() {
     const select = document.getElementById('unitType');
-    const current = select.value;
-    const parts = current.split('-');
+    const parts = select.value.split('-');
     const reversed = parts[1] + '-' + parts[0];
-
     for (let i = 0; i < select.options.length; i++) {
         if (select.options[i].value === reversed) {
             select.selectedIndex = i;
-            const temp = document.getElementById('convFrom').value;
             document.getElementById('convFrom').value = document.getElementById('convTo').value;
             convertir();
             break;
@@ -114,17 +170,13 @@ function swapUnits() {
     }
 }
 
-// --- GRÁFICA ---
 let myChart = null;
 function renderGraph() {
     const ctx = document.getElementById('tvChart').getContext('2d');
     if (myChart) myChart.destroy();
-
-    // Crear puntos del domo (Líquido + Vapor)
     const pointsVf = dataA4.map(r => ({ x: r.vf, y: r.T }));
     const pointsVg = [...dataA4].reverse().map(r => ({ x: r.vg, y: r.T }));
     const domeData = pointsVf.concat(pointsVg);
-
     myChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -148,16 +200,11 @@ function renderGraph() {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: {
-                    type: 'logarithmic',
-                    title: { display: true, text: 'Volumen Específico v (m³/kg)' },
-                    min: 0.0008
-                },
-                y: {
-                    title: { display: true, text: 'Temperatura T (°C)' },
-                    min: 0
-                }
+                x: { type: 'logarithmic', min: 0.0008 },
+                y: { min: 0 }
             }
         }
     });
 }
+
+window.addEventListener('load', renderizarHistorial);
