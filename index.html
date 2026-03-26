@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TermoCalc Pro v2.5</title>
@@ -80,6 +80,16 @@
                     </div>
                 </div>
             </section>
+
+            <div class="card full-width">
+                <h3><i class="fas fa-history"></i> Historial de Cálculos</h3>
+                <div id="historial-lista" style="max-height: 200px; overflow-y: auto;">
+                    <p style="color: #666; font-style: italic;">No hay cálculos guardados aún.</p>
+                </div>
+                <button class="btn-primary" style="background: #e74c3c; margin-top: 10px;" onclick="limpiarHistorial()">
+                    <i class="fas fa-trash"></i> Borrar Historial
+                </button>
+            </div>
 
             <section id="conversor" class="tab-content">
                 <h2>Conversor Bidireccional</h2>
